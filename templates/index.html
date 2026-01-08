@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tubes algo</title>
+  </head>
+  <body>
+    <main class="container">
+      <h1>tubes algo</h1>
+      <p>String Matching: Knuth-Morris-Pratt vs Boyer-Moore</p>
+
+      <form method="post">
+        <label for="text">DOKUMEN TEKS KALIAN</label>
+        <textarea name="text" id="text" rows="5" required>{{ text }}</textarea>
+
+        <label for="pattern">PATTERN YANG DICARI</label>
+        <input
+          type="text"
+          name="pattern"
+          id="pattern"
+          value="{{ pattern }}"
+          required
+        />
+        <!-- nanti disini kita bisa masukin file -->
+        <!-- <input type="file" name="file" id="file"> -->
+
+        <button type="submit">cari</button>
+
+        {% if result_kmp %}
+        <div class="grid">
+          <article>
+            <header><strong>ALGORITMA KMP</strong></header>
+            <p>waktu eksekusi: <strong>{{ time_kmp }}</strong></p>
+            <p>hasil index: {{ result_kmp }}</p>
+          </article>
+
+          <article>
+            <header><strong>ALGORITMA BM</strong></header>
+            <p>waktu eksekusi: <strong>{{ time_bm }}</strong></p>
+            <p>hasil index: {{ result_bm }}</p>
+          </article>
+        </div>
+        {% endif %}
+      </form>
+    </main>
+  </body>
+</html>
