@@ -1,48 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tubes algo</title>
+    <title>String Matching - KMP & Boyer Moore</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <main class="container">
-      <h1>tubes algo</h1>
-      <p>String Matching: Knuth-Morris-Pratt vs Boyer-Moore</p>
+    <main class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <header class="text-center mb-5">
+            <h1 class="header-title">Deteksi Plagiarisme Dokumen</h1>
+            <p class="text-muted">
+              Analisis Perbandingan Algoritma KMP vs Boyer-Moore
+            </p>
+          </header>
 
-      <form method="post">
-        <label for="text">DOKUMEN TEKS KALIAN</label>
-        <textarea name="text" id="text" rows="5" required>{{ text }}</textarea>
+          <section class="card main-card mb-4">
+            <div class="card-body p-4">
+              <form method="POST" enctype="multipart/form-data">
+                <div class="mb-4">
+                  <label for="pattern" class="form-label fw-bold"
+                    >Kata/Kalimat yang dicari (Pattern):</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    name="pattern"
+                    id="pattern"
+                    placeholder="Contoh: saya mencurigai kalimat ini"
+                    value="{{ pattern }}"
+                    required
+                  />
+                </div>
 
-        <label for="pattern">PATTERN YANG DICARI</label>
-        <input
-          type="text"
-          name="pattern"
-          id="pattern"
-          value="{{ pattern }}"
-          required
-        />
-        <!-- nanti disini kita bisa masukin file -->
-        <!-- <input type="file" name="file" id="file"> -->
+                <label class="form-label fw-bold">Pilih Sumber Dokumen:</label>
+                <ul class="nav nav-tabs mb-3" id="inputTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link {% if active_tab == 'manual' %}active{% endif %}"
+                      id="manual-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#manual"
+                      type="button"
+                      role="tab"
+                    >
+                      Ketik Manual
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link {% if active_tab == 'upload' %}active{% endif %}"
+                      id="upload-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#upload"
+                      type="button"
+                      role="tab"
+                    >
+                      Upload File
+                    </button>
+                  </li>
+                </ul>
 
-        <button type="submit">cari</button>
+                <div class="tab-content mb-4" id="inputTabContent">
+                  <div
+                    class="tab-pane fade {% if active_tab == 'manual' %}show active{% endif %}"
+                    id="manual"
+                    role="tabpanel"
+                  >
+                    <textarea
+                      class="form-control"
+                      name="text_manual"
+                      rows="6"
+                      placeholder="Paste teks dokumen di sini..."
+                    >
+{{ text_preview }}</textarea
+                    >
+                  </div>
 
-        {% if result_kmp %}
-        <div class="grid">
-          <article>
-            <header><strong>ALGORITMA KMP</strong></header>
-            <p>waktu eksekusi: <strong>{{ time_kmp }}</strong></p>
-            <p>hasil index: {{ result_kmp }}</p>
-          </article>
+                  <div
+                    class="tab-pane fade {% if active_tab == 'upload' %}show active{% endif %}"
+                    id="upload"
+                    role="tabpanel"
+                  >
+                    <div class="border p-4 text-center bg-light rounded">
+                      <p class="mb-2">Support: .pdf, .docx</p>
+                      <input
+                        class="form-control"
+                        type="file"
+                        name="file_upload"
+                        id="file_upload"
+                        accept=".txt,.pdf,.docx"
+                      />
+                    </div>
+                  </div>
+                </div>
 
-          <article>
-            <header><strong>ALGORITMA BM</strong></header>
-            <p>waktu eksekusi: <strong>{{ time_bm }}</strong></p>
-            <p>hasil index: {{ result_bm }}</p>
-          </article>
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary btn-lg">
+                    Jalankan Analisis
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          {% if result_kmp %}
+          <section>
+            <div class="mb-4">
+              <h6 class="text-muted">Preview Dokumen (500 karakter awal):</h6>
+              <div class="text-preview-box">{{ text_preview }}...</div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <article class="card result-card card-kmp h-100">
+                  <div class="card-body">
+                    <header>
+                      <h3 class="card-title text-primary fw-bold h5">
+                        Knuth-Morris-Pratt (KMP)
+                      </h3>
+                      <hr />
+                    </header>
+                    <dl class="row mb-0">
+                      <dt class="col-6">Waktu Eksekusi:</dt>
+                      <dd class="col-6 text-end">
+                        <span class="badge bg-primary badge-time"
+                          >{{ time_kmp }} ms</span
+                        >
+                      </dd>
+                      <dt class="col-6">Ditemukan:</dt>
+                      <dd class="col-6 text-end fw-bold">
+                        {{ kmp_count }} kali
+                      </dd>
+                    </dl>
+                    <div
+                      class="alert alert-light border font-monospace mt-3"
+                      style="max-height: 100px; overflow-y: auto"
+                    >
+                      <small>Index: {{ result_kmp }}</small>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <article class="card result-card card-bm h-100">
+                  <div class="card-body">
+                    <header>
+                      <h3 class="card-title text-success fw-bold h5">
+                        Boyer-Moore
+                      </h3>
+                      <hr />
+                    </header>
+                    <dl class="row mb-0">
+                      <dt class="col-6">Waktu Eksekusi:</dt>
+                      <dd class="col-6 text-end">
+                        <span class="badge bg-success badge-time"
+                          >{{ time_bm }} ms</span
+                        >
+                      </dd>
+                      <dt class="col-6">Ditemukan:</dt>
+                      <dd class="col-6 text-end fw-bold">
+                        {{ bm_count }} kali
+                      </dd>
+                    </dl>
+                    <div
+                      class="alert alert-light border font-monospace mt-3"
+                      style="max-height: 100px; overflow-y: auto"
+                    >
+                      <small>Index: {{ result_bm }}</small>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+          {% endif %}
         </div>
-        {% endif %}
-      </form>
+      </div>
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
