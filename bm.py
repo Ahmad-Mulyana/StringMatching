@@ -1,7 +1,4 @@
 def build_bad_character_table(pattern):
-    """
-    Tabel karakter buruk (bad character heuristic)
-    """
     table = {}
     for i in range(len(pattern)):
         table[pattern[i]] = i
@@ -9,15 +6,12 @@ def build_bad_character_table(pattern):
 
 
 def boyer_moore_search(text, pattern):
-    """
-    Mengembalikan list posisi kemunculan pattern di text
-    """
     bad_char = build_bad_character_table(pattern)
     positions = []
 
     m = len(pattern)
     n = len(text)
-    s = 0  # shift shift an cuy
+    s = 0
 
     while s <= n - m:
         j = m - 1

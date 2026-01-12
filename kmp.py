@@ -1,7 +1,4 @@
 def compute_lps(pattern):
-    """
-    LPS (Longest Prefix Suffix)
-    """
     lps = [0] * len(pattern)
     length = 0
     i = 1
@@ -21,13 +18,10 @@ def compute_lps(pattern):
 
 
 def kmp_search(text, pattern):
-    """
-    Mengembalikan list posisi kemunculan pattern di text
-    """
     lps = compute_lps(pattern)
     positions = []
 
-    i = j = 0  # i untuk text, j untuk pattern
+    i = j = 0
 
     while i < len(text):
         if text[i] == pattern[j]:
